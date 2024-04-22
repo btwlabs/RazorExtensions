@@ -1,11 +1,12 @@
-using System;
+namespace BTWRazorExtensions;
+
 using System.Text.RegularExpressions;
 using System.Globalization;
 
-public class Sanitization
+public static class Sanitization
 {
     
-    public static string CleanCssIdentifier(string identifier, Dictionary<string, string> filter = null)
+    public static string CleanCssIdentifier(this string identifier, Dictionary<string, string> filter = null)
     {
         if (filter == null) 
         {
@@ -46,14 +47,13 @@ public class Sanitization
         // - 0-9 (U+0061 - U+007A)
         // - ISO 10646 characters U+00A1 and higher
         // We strip out any character not in the above list.
-        identifier = Regex.Replace(identifier, @"[^\x002D\x0030-\x0039\x0041-\x005A\x005F\x0061-\x007A\x00A1-\uFFFF]", "");
-        
+        identifier = Regex.Replace(identifier, @"[^-\u0030-\u0039\u0041-\u005A_\u0061-\u007A\u00A1-\uFFFF]", "", RegexOptions.Compiled);
         // Identifiers cannot start with a digit, two hyphens, or a hyphen followed by a digit.
         identifier = Regex.Replace(identifier, "^[0-9]|^(-[0-9])|^(--)", "_");
-        return identifier;
+        return identifier.ToLower();
     }
     
-    public static string CleanID(string id)
+    public static string CleanID(this string id)
     {
         id = id.Replace(" ", "-").
             Replace("_", "-").
